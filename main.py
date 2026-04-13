@@ -8,22 +8,7 @@ from mediapipe.tasks.python import vision
 from mediapipe.tasks.python.vision import drawing_utils as mp_drawing
 from mediapipe.tasks.python.vision import drawing_styles as mp_drawing_styles
 from mediapipe.tasks.python.vision import HandLandmarksConnections
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
 
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# Mac OS folder attributes
-.DS_Store
 class HandGesture:
     def __init__(self, x,y,z):
         self.x = x
