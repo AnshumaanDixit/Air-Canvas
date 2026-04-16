@@ -51,6 +51,7 @@ def mediapipe():
     while flag_mediapipe: #a flag to control the start and end of this thread
         frame_for_landmark = mp.Image(image_format= mp.ImageFormat.SRGB, data = frame) #a special image object that is defined and used by mediapipe for detection of hand
         timestamp = int(t.time()*1000) #timestamp reference to be used as a parameter for detect_for_video for better and faster result
+        cv2.flip(frame_for_landmark,1)
         result = detector.recognize_for_video(frame_for_landmark,timestamp) #the detector object defined before has an attribute for detect_for_video that takes its own specialized image object, and returns the location of hands in the image/frame IN PERCENTAGE,timestamp parameter is used for better optimization, also a side note, it also has a detect attribute that will detect on a single image, but detect_for_video is better optimized for videos, since the previous image is similar to next one, essentially a frame
         with lock:
             output_frame = cv2.cvtColor(frame,cv2.COLOR_RGB2BGR) #a final finished variable to avoid corruption of frame or any unexpected behavior
@@ -61,6 +62,7 @@ def mediapipe():
                             connections=HandLandmarksConnections.HAND_CONNECTIONS,
                             landmark_drawing_spec=dot_custom,
                             connection_drawing_spec=line_custom) #draw_landmarks() is a attribute of the drawing_utils object, that takes the image, AND DRAWS ON THE EXISTING ONE! DOES NOT RETURN OR CREATE A NEW ONE, image:takes the numpy array, landmarks_list:take the percentage position of the 21 landmarks of one hand, hence inside a loop for both hands, connections:data for this parameter is pulled from the mediapipe module itself, it basically tells the code which landmarks connects to which so it represents a hand, landmarks_drawing_style and connection_drawing_style: they take exactly what they say, the style for the lines(connections) and dots(landmarks) for the hand representation, its default style can be obtained from drawing_styles by drawing_styles.get_default_hand_landmarks/connections_style()
+            cv2.flip(output_frame,1)
 cv2.namedWindow("webcam",cv2.WINDOW_AUTOSIZE) #the window to show it on created first, for its mode to be editable, the 2nd parameter cv2.WINDOW_AUTOSIZE defines the type of window, here the window fits to size of the image on it, in our case it is a frame
 
 updFrame = th.Thread(target = update_frame)
