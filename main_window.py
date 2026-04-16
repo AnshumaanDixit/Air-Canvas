@@ -2,7 +2,7 @@ import tkinter as tk
 import subprocess
 global air_controller
 def run_air_controller():
-    air_controller = subprocess.Popen(["python","Code/aircontroller.py"])
+    air_controller = subprocess.Popen(["python","aircontroller.py"])
     return air_controller
 main = tk.Tk()
 main.title("Air Controller")

@@ -49,9 +49,9 @@ def update_frame():
 def mediapipe():
     global frame,result,output_frame,dot_custom,line_custom #global keyword so when this is run on a thread, its variables refer to the global of the main thread, so that the code inside the thread can be controlled
     while flag_mediapipe: #a flag to control the start and end of this thread
+        cv2.flip(frame,1)
         frame_for_landmark = mp.Image(image_format= mp.ImageFormat.SRGB, data = frame) #a special image object that is defined and used by mediapipe for detection of hand
         timestamp = int(t.time()*1000) #timestamp reference to be used as a parameter for detect_for_video for better and faster result
-        cv2.flip(frame_for_landmark,1)
         result = detector.recognize_for_video(frame_for_landmark,timestamp) #the detector object defined before has an attribute for detect_for_video that takes its own specialized image object, and returns the location of hands in the image/frame IN PERCENTAGE,timestamp parameter is used for better optimization, also a side note, it also has a detect attribute that will detect on a single image, but detect_for_video is better optimized for videos, since the previous image is similar to next one, essentially a frame
         with lock:
             output_frame = cv2.cvtColor(frame,cv2.COLOR_RGB2BGR) #a final finished variable to avoid corruption of frame or any unexpected behavior
