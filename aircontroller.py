@@ -1,3 +1,4 @@
+import os
 import cv2
 import time as t
 import random as r
@@ -8,13 +9,14 @@ from mediapipe.tasks.python import vision
 from mediapipe.tasks.python.vision import drawing_utils as mp_drawing
 from mediapipe.tasks.python.vision import drawing_styles as mp_drawing_styles
 from mediapipe.tasks.python.vision import HandLandmarksConnections
-
+current_dir = os.path.dirname(os.path.abspath(__file__))
+model_file_path = os.path.join(current_dir, 'hand_landmarker.task')
 class HandGesture:
     def __init__(self, x,y,z):
         self.x = x
         self.y = y
         self.z = z
-baseop = python.BaseOptions(model_asset_path = "hand_landmarker.task") #used as a variable to store the base options for getting the options used to create detector object, used for better readability
+baseop = python.BaseOptions(model_asset_path = model_file_path) #used as a variable to store the base options for getting the options used to create detector object, used for better readability
 op = vision.HandLandmarkerOptions(base_options=baseop, num_hands = 2, running_mode = vision.RunningMode.VIDEO) #used as a variable to store the options for creation of detector object, for better readability
 detector = vision.HandLandmarker.create_from_options(op) #create a object from mediapipe that detects for hand in the given frame
 
