@@ -9,11 +9,12 @@ from mediapipe.tasks.python import vision
 from mediapipe.tasks.python.vision import drawing_utils as mp_drawing
 from mediapipe.tasks.python.vision import drawing_styles as mp_drawing_styles
 from mediapipe.tasks.python.vision import HandLandmarksConnections
+from mediapipe.tasks.python.vision import GestureRecognizer, GestureRecognizerOptions
 current_dir = os.path.dirname(os.path.abspath(__file__))
-model_file_path = os.path.join(current_dir, 'hand_landmarker.task')
+model_file_path = os.path.join(current_dir, 'gesture_recognizer.task')
 baseop = python.BaseOptions(model_asset_path = model_file_path) #used as a variable to store the base options for getting the options used to create detector object, used for better readability
-op = vision.HandLandmarkerOptions(base_options=baseop, num_hands = 2, running_mode = vision.RunningMode.VIDEO) #used as a variable to store the options for creation of detector object, for better readability
-detector = vision.HandLandmarker.create_from_options(op) #create a object from mediapipe that detects for hand in the given frame
+op = GestureRecognizerOptions(base_options=baseop, num_hands = 2, running_mode = vision.RunningMode.VIDEO) #used as a variable to store the options for creation of detector object, for better readability
+detector = GestureRecognizer.create_from_options(op) #create a object from mediapipe that detects for hand in the given frame
 
 camera = cv2.VideoCapture(0) #create a webcam object to read from
 key = 0 #a variable to store and check if the user pressed the closing key
@@ -50,7 +51,7 @@ def mediapipe():
     while flag_mediapipe: #a flag to control the start and end of this thread
         frame_for_landmark = mp.Image(image_format= mp.ImageFormat.SRGB, data = frame) #a special image object that is defined and used by mediapipe for detection of hand
         timestamp = int(t.time()*1000) #timestamp reference to be used as a parameter for detect_for_video for better and faster result
-        result = detector.detect_for_video(frame_for_landmark,timestamp) #the detector object defined before has an attribute for detect_for_video that takes its own specialized image object, and returns the location of hands in the image/frame IN PERCENTAGE,timestamp parameter is used for better optimization, also a side note, it also has a detect attribute that will detect on a single image, but detect_for_video is better optimized for videos, since the previous image is similar to next one, essentially a frame
+        result = detector.recognize_for_video(frame_for_landmark,timestamp) #the detector object defined before has an attribute for detect_for_video that takes its own specialized image object, and returns the location of hands in the image/frame IN PERCENTAGE,timestamp parameter is used for better optimization, also a side note, it also has a detect attribute that will detect on a single image, but detect_for_video is better optimized for videos, since the previous image is similar to next one, essentially a frame
         with lock:
             output_frame = cv2.cvtColor(frame,cv2.COLOR_RGB2BGR) #a final finished variable to avoid corruption of frame or any unexpected behavior
             for hand_landmarks in result.hand_landmarks: #so results contains 3 objects, hand_landmarks, world_landmarks, and handedness, hand_landmarks are the percentage position on the screen of hands, world_landmarks is a physical coordinate system result used for 3d space, and handedness is just another object that tells if the hand is left or right, here result will have 2 element in the hand_landmarks object list, those will be the coordinate of the 21 landmark points, given in percentage style, for two hands so a 2d array, 
