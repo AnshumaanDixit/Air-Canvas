@@ -47,19 +47,52 @@ root.title("Air Canvas Keyboard")
 root.attributes('-topmost', True) 
 root.configure(bg='#2b2b2b')
 
+buffer_text = tk.StringVar()
+buffer_text.set("")
+
+display_label = tk.Label(
+    root, 
+    textvariable=buffer_text, 
+    font=('Arial', 18, 'bold'), 
+    bg='white', 
+    fg='black', 
+    height=2, 
+    anchor='w', 
+    padx=10
+)
+
+display_label.grid(row=0, column=0, columnspan=14, sticky='nsew', padx=5, pady=5)
+
 keyboard_layout = [
     ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
-    ['Tab', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
+    ['Clear', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
     ['Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'Enter'],
     ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Shift'],
     ['Space']
 ]
+flag_written = False
+current_message = ""
+def press_key(key_val):
+    """Updates the buffer instead of typing instantly."""
+    global current_message,flag_written
+    current_message = buffer_text.get()
+    
+    if key_val == 'Backspace':
+        buffer_text.set(current_message[:-1]) 
+    elif key_val == 'Space':
+        buffer_text.set(current_message + " ")
+    elif key_val == 'Clear':
+        buffer_text.set("") 
+    else:
+        buffer_text.set(current_message + key_val)
+        current_message = buffer_text.get() 
+        flag_written = False
 
-for row_index, row_keys in enumerate(keyboard_layout):
+for row_index, row_keys in enumerate(keyboard_layout, start=1):
     for col_index, key_val in enumerate(row_keys):
         colspan = 1
         width = 4
-        if key_val in ['Backspace', 'Enter', 'Shift', 'Caps', 'Tab']:
+        if key_val in ['Backspace', 'Enter', 'Shift', 'Caps', 'Clear']:
             width = 8
         elif key_val == 'Space':
             colspan = 14
@@ -76,6 +109,9 @@ for row_index, row_keys in enumerate(keyboard_layout):
             btn.grid(row=row_index, column=col_index, padx=2, pady=2, sticky='nsew')
 
 def hand_gesture_logic():
+    global current_message,flag_written
+    margin_x = 0.15  
+    margin_y = 0.15
     while True:
         if(result!=0):
             if(result.gestures):
@@ -87,10 +123,16 @@ def hand_gesture_logic():
             
                 if(hand_1_handedness == "Right" and hand_1_gesture == "Pointing_Up"):
                     hand_1_x = result.hand_landmarks[0][8].x
-                    hand_1_y = result.hand_landmarks[0][0].y
+                    hand_1_y = result.hand_landmarks[0][8].y
                     screen_x,screen_y = pg.size()
-                    pg.moveTo(hand_1_x*screen_x,hand_1_y*screen_y,duration=0)
+                    target_x = (hand_1_x - margin_x) / (1.0 - 2 * margin_x) * screen_x
+                    target_y = (hand_1_y - margin_y) / (1.0 - 2 * margin_y) * screen_y
+                    pg.moveTo(target_x,target_y,duration=0)
                     flag_prev_was_point_up = True
+                if (hand_1_handedness == "Right" and hand_1_gesture == "Open_Palm"):
+                    if (flag_written == False):
+                        pg.write(current_message,interval = 0)
+                        flag_written = True
                 if(flag_prev_was_point_up and hand_1_handedness == "Right" and hand_1_gesture == "Closed_Fist"):
                     pg.click()
                     flag_prev_was_point_up = False
@@ -100,7 +142,7 @@ def hand_gesture_logic():
                     print(f"Hand 2 is performing {hand_2_gesture} and it is a {hand_2_handedness}")
                     if(hand_2_handedness == "Right" and hand_2_gesture == "Pointing_Up"):
                         hand_2_x = result.hand_landmarks[1][8].x
-                        hand_2_y = result.hand_landmarks[1][0].y
+                        hand_2_y = result.hand_landmarks[1][8].y
                         screen_x,screen_y = pg.size()
                         pg.moveTo(hand_2_x*screen_x,hand_2_y*screen_y,duration=0)
                         flag_prev_was_point_up = True
