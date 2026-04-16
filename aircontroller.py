@@ -144,8 +144,17 @@ def hand_gesture_logic():
                         hand_2_x = result.hand_landmarks[1][8].x
                         hand_2_y = result.hand_landmarks[1][8].y
                         screen_x,screen_y = pg.size()
-                        pg.moveTo(hand_2_x*screen_x,hand_2_y*screen_y,duration=0)
+                        target_x = (hand_2_x - margin_x) / (1.0 - 2 * margin_x) * screen_x
+                        target_y = (hand_2_y - margin_y) / (1.0 - 2 * margin_y) * screen_y
+                        pg.moveTo(target_x,target_y,duration=0)
                         flag_prev_was_point_up = True
+                    if (hand_2_handedness == "Right" and hand_2_gesture == "Open_Palm"):
+                        if (flag_written == False):
+                            pg.write(current_message,interval = 0)
+                            flag_written = True
+                    if(flag_prev_was_point_up and hand_2_handedness == "Right" and hand_2_gesture == "Closed_Fist"):
+                        pg.click()
+                        flag_prev_was_point_up = False
 '''
 def update_frame():
     global flag
