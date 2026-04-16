@@ -17,7 +17,7 @@ pg.PAUSE = 0
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 model_file_path = os.path.join(current_dir, 'gesture_recognizer.task')
-baseop = python.BaseOptions(model_asset_path = model_file_path) #used as a variable to store the base options for getting the options used to create detector object, used for better readability
+baseop = python.BaseOptions(model_asset_path = model_file_path,delegate=python.BaseOptions.Delegate.GPU) #used as a variable to store the base options for getting the options used to create detector object, used for better readability
 op = GestureRecognizerOptions(base_options=baseop, num_hands = 2, running_mode = vision.RunningMode.VIDEO) #used as a variable to store the options for creation of detector object, for better readability
 detector = GestureRecognizer.create_from_options(op) #create a object from mediapipe that detects for hand in the given frame
 
