@@ -22,7 +22,7 @@ FPS = 60
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 model_file_path = os.path.join(current_dir, 'gesture_recognizer.task')
-baseop = python.BaseOptions(model_asset_path = model_file_path) 
+baseop = python.BaseOptions(model_asset_path = model_file_path,delegate = python.BaseOptions.Delegate.GPU) 
 op = GestureRecognizerOptions(base_options=baseop, num_hands = 2, running_mode = vision.RunningMode.VIDEO) 
 detector = GestureRecognizer.create_from_options(op) 
 
