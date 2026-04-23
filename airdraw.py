@@ -32,81 +32,6 @@ dot_custom = mp_drawing.DrawingSpec(color=(1,255,31),thickness=10,circle_radius=
 line_custom = mp_drawing.DrawingSpec(color=(189,0,255),thickness=8) 
 flag_mediapipe, flag_update_frame = 1,1
 flag_prev_was_point_up= False
-def press_key(key_val):
-    """Function to trigger pyautogui when a Tkinter button is pressed."""
-    if key_val == 'Space': pg.press('space')
-    elif key_val == 'Enter': pg.press('enter')
-    elif key_val == 'Backspace': pg.press('backspace')
-    elif key_val == 'Tab': pg.press('tab')
-    elif key_val == 'Caps': pg.press('capslock')
-    elif key_val == 'Shift': pg.press('shift')
-    else: pg.press(key_val)
-
-root = tk.Tk()
-root.title("Air Canvas Keyboard")
-root.attributes('-topmost', True) 
-root.configure(bg='#2b2b2b')
-
-buffer_text = tk.StringVar()
-buffer_text.set("")
-
-display_label = tk.Label(
-    root, 
-    textvariable=buffer_text, 
-    font=('Arial', 18, 'bold'), 
-    bg='white', 
-    fg='black', 
-    height=2, 
-    anchor='w', 
-    padx=10
-)
-
-display_label.grid(row=0, column=0, columnspan=14, sticky='nsew', padx=5, pady=5)
-
-keyboard_layout = [
-    ['`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=', 'Backspace'],
-    ['Clear', 'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']', '\\'],
-    ['Caps', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';', "'", 'Enter'],
-    ['Shift', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/', 'Shift'],
-    ['Space']
-]
-flag_written = False
-current_message = ""
-def press_key(key_val):
-    """Updates the buffer instead of typing instantly."""
-    global current_message,flag_written
-    current_message = buffer_text.get()
-    
-    if key_val == 'Backspace':
-        buffer_text.set(current_message[:-1]) 
-    elif key_val == 'Space':
-        buffer_text.set(current_message + " ")
-    elif key_val == 'Clear':
-        buffer_text.set("") 
-    else:
-        buffer_text.set(current_message + key_val)
-        current_message = buffer_text.get() 
-        flag_written = False
-
-for row_index, row_keys in enumerate(keyboard_layout, start=1):
-    for col_index, key_val in enumerate(row_keys):
-        colspan = 1
-        width = 4
-        if key_val in ['Backspace', 'Enter', 'Shift', 'Caps', 'Clear']:
-            width = 8
-        elif key_val == 'Space':
-            colspan = 14
-            width = 40
-            
-        btn = tk.Button(
-            root, text=key_val, width=width, height=2,
-            font=('Arial', 12, 'bold'), bg='#4a4a4a', fg='black',
-            command=lambda k=key_val: press_key(k)
-        )
-        if key_val == 'Space':
-            btn.grid(row=row_index, column=0, columnspan=colspan, padx=2, pady=2, sticky='nsew')
-        else:
-            btn.grid(row=row_index, column=col_index, padx=2, pady=2, sticky='nsew')
 
 def hand_gesture_logic():
     global current_message,flag_written
@@ -214,11 +139,6 @@ CursorMove.daemon = True
 CursorMove.start()
 
 while True:
-    try:
-        root.update_idletasks()
-        root.update()
-    except tk.TclError:
-        pass
     key = cv2.waitKey(1) 
     '''
     if key==ord('r'): 
@@ -246,4 +166,3 @@ while True:
             break
 camera.release() 
 cv2.destroyAllWindows() 
-root.destroy()
