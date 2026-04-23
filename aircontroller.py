@@ -152,6 +152,8 @@ def hand_gesture_logic():
                         if (flag_written == False):
                             pg.write(current_message,interval = 0)
                             flag_written = True
+                    if(hand_2_handedness == "Left" and hand_2_gesture == "Closed_Fist"):
+                        pg.press("Backspace")
                     if(flag_prev_was_point_up and hand_2_handedness == "Right" and hand_2_gesture == "Closed_Fist"):
                         pg.click()
                         flag_prev_was_point_up = False
