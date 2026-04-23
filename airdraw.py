@@ -17,7 +17,7 @@ pg.PAUSE = 0
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 model_file_path = os.path.join(current_dir, 'gesture_recognizer.task')
-baseop = python.BaseOptions(model_asset_path = model_file_path) 
+baseop = python.BaseOptions(model_asset_path = model_file_path,delegate = python.BaseOptions.Delegate.GPU) 
 op = GestureRecognizerOptions(base_options=baseop, num_hands = 2, running_mode = vision.RunningMode.VIDEO) 
 detector = GestureRecognizer.create_from_options(op) 
 
@@ -54,10 +54,6 @@ def hand_gesture_logic():
                     target_y = (hand_1_y - margin_y) / (1.0 - 2 * margin_y) * screen_y
                     pg.moveTo(target_x,target_y,duration=0)
                     flag_prev_was_point_up = True
-                if (hand_1_handedness == "Right" and hand_1_gesture == "Open_Palm"):
-                    if (flag_written == False):
-                        pg.write(current_message,interval = 0)
-                        flag_written = True
                 if(flag_prev_was_point_up and hand_1_handedness == "Right" and hand_1_gesture == "Closed_Fist"):
                     pg.click()
                     flag_prev_was_point_up = False
@@ -73,12 +69,6 @@ def hand_gesture_logic():
                         target_y = (hand_2_y - margin_y) / (1.0 - 2 * margin_y) * screen_y
                         pg.moveTo(target_x,target_y,duration=0)
                         flag_prev_was_point_up = True
-                    if (hand_2_handedness == "Right" and hand_2_gesture == "Open_Palm"):
-                        if (flag_written == False):
-                            pg.write(current_message,interval = 0)
-                            flag_written = True
-                    if(hand_2_handedness == "Left" and hand_2_gesture == "Closed_Fist"):
-                        pg.press("Backspace")
                     if(flag_prev_was_point_up and hand_2_handedness == "Right" and hand_2_gesture == "Closed_Fist"):
                         pg.click()
                         flag_prev_was_point_up = False
