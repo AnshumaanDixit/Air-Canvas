@@ -1,4 +1,5 @@
 import os
+import sys
 import cv2
 import time as t
 import random as r
@@ -12,12 +13,13 @@ from mediapipe.tasks.python.vision import HandLandmarksConnections
 from mediapipe.tasks.python.vision import GestureRecognizer, GestureRecognizerOptions
 import pyautogui as pg
 import tkinter as tk
+start_time = t.perf_counter()
 pg.FAILSAFE = True
 pg.PAUSE = 0
-
+FPS = 60
 current_dir = os.path.dirname(os.path.abspath(__file__))
 model_file_path = os.path.join(current_dir, 'gesture_recognizer.task')
-baseop = python.BaseOptions(model_asset_path = model_file_path,delegate = python.BaseOptions.Delegate.GPU) 
+baseop = python.BaseOptions(model_asset_path = model_file_path) 
 op = GestureRecognizerOptions(base_options=baseop, num_hands = 2, running_mode = vision.RunningMode.VIDEO) 
 detector = GestureRecognizer.create_from_options(op) 
 
@@ -136,6 +138,8 @@ def hand_gesture_logic():
                 if(flag_prev_was_point_up and hand_1_handedness == "Right" and hand_1_gesture == "Closed_Fist"):
                     pg.click()
                     flag_prev_was_point_up = False
+                if(hand_1_handedness == "Left" and hand_1_gesture == "Closed_Fist"):
+                        pg.press("Backspace")
                 if(len(result.gestures)>1):
                     hand_2_gesture = result.gestures[1][0].category_name
                     hand_2_handedness = handedness[result.handedness[1][0].category_name]
@@ -179,11 +183,14 @@ def update_frame():
 '''
 def mediapipe():
     global frame,result,output_frame,dot_custom,line_custom 
+    def get_time():
+        global start_time
+        return int((t.perf_counter() - start_time)*1000)
     while flag_mediapipe: 
         frame_1 = frame
         cv2.flip(frame_1,1)
         frame_for_landmark = mp.Image(image_format= mp.ImageFormat.SRGB, data = frame_1) 
-        timestamp = int(t.time()*1000) 
+        timestamp = get_time()
         result = detector.recognize_for_video(frame_for_landmark,timestamp) 
         '''
         with lock:
